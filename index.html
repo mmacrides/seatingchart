@@ -17,15 +17,44 @@
             font-size: 36px;
             margin-bottom: 20px;
         }
-        select {
-            width: 80%;
-            max-width: 350px;
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 90%;
+            max-width: 400px;
+        }
+        input {
+            width: 100%;
             padding: 12px;
             font-size: 18px;
             border: 2px solid #8b5e3b;
             border-radius: 10px;
             background-color: #fffaf0;
             color: #5a3d2b;
+            box-sizing: border-box;
+        }
+        #suggestions {
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #8b5e3b;
+            border-radius: 5px;
+            margin-top: 5px;
+            position: absolute;
+            width: calc(100% - 30px);
+            z-index: 1000;
+            display: none;
+        }
+        .suggestion {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .suggestion:hover {
+            background-color: #f0e6d6;
         }
         #table-number {
             margin-top: 20px;
@@ -37,13 +66,10 @@
             padding: 10px 20px;
             border-radius: 8px;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        .relative {
+            position: relative;
             display: inline-block;
-            margin-top: 20px;
+            width: 100%;
         }
     </style>
 </head>
@@ -52,10 +78,10 @@
     <h1>Wedding Seating Chart</h1>
     <div class="container">
         <label for="guest">Find Your Name:</label>
-        <br><br>
-        <select id="guest" onchange="updateTable()">
-            <option value="">Select your name...</option>
-        </select>
+        <div class="relative">
+            <input type="text" id="guest" placeholder="Start typing your name..." oninput="showSuggestions()">
+            <div id="suggestions"></div>
+        </div>
         <p id="table-number"></p>
     </div>
 
@@ -67,31 +93,62 @@
             .then(response => response.text())
             .then(data => {
                 const rows = data.split('\n').slice(1); // Skip header row
-                const dropdown = document.getElementById('guest');
-
                 rows.forEach(row => {
                     const [name, table] = row.split(',');
                     if (name && table) {
                         seatingData[name.trim()] = table.trim();
-                        let option = document.createElement('option');
-                        option.value = name.trim();
-                        option.textContent = name.trim();
-                        dropdown.appendChild(option);
                     }
                 });
             });
 
-        function updateTable() {
-            const name = document.getElementById('guest').value;
-            const tableNumber = seatingData[name];
-            const output = document.getElementById('table-number');
+        function showSuggestions() {
+            const input = document.getElementById('guest');
+            const suggestionsDiv = document.getElementById('suggestions');
+            const query = input.value.toLowerCase();
+            suggestionsDiv.innerHTML = '';
 
-            if (tableNumber) {
-                output.textContent = `You are seated at Table ${tableNumber}`;
-            } else {
-                output.textContent = '';
+            if (!query) {
+                suggestionsDiv.style.display = 'none';
+                return;
             }
+
+            // Filter names based on input
+            const matchingNames = Object.keys(seatingData).filter(name => 
+                name.toLowerCase().includes(query)
+            );
+
+            if (matchingNames.length === 0) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            // Show suggestions
+            matchingNames.forEach(name => {
+                const div = document.createElement('div');
+                div.textContent = name;
+                div.classList.add('suggestion');
+                div.onclick = () => selectName(name);
+                suggestionsDiv.appendChild(div);
+            });
+
+            suggestionsDiv.style.display = 'block';
         }
+
+        function selectName(name) {
+            document.getElementById('guest').value = name;
+            document.getElementById('suggestions').style.display = 'none';
+
+            const tableNumber = seatingData[name];
+            document.getElementById('table-number').textContent = 
+                tableNumber ? `You are seated at Table ${tableNumber}` : '';
+        }
+
+        // Hide suggestions if clicked outside
+        document.addEventListener('click', (e) => {
+            if (!document.querySelector('.relative').contains(e.target)) {
+                document.getElementById('suggestions').style.display = 'none';
+            }
+        });
     </script>
 
 </body>
