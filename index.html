@@ -3,10 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+    <title>Wedding Seating Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        select {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #table-number {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Website!</h1>
-    <p>This is a simple free website hosted on GitHub Pages.</p>
+
+    <h1>Wedding Seating Chart</h1>
+    <label for="guest">Find Your Name:</label>
+    <input list="guest-list" id="guest" placeholder="Start typing your name..." oninput="updateTable()">
+    <datalist id="guest-list"></datalist>
+
+    <p id="table-number"></p>
+
+    <script>
+        let seatingData = {};
+
+        // Load CSV file
+        fetch('seatingchart.csv')
+            .then(response => response.text())
+            .then(data => {
+                const rows = data.split('\n').slice(1); // Skip header row
+                rows.forEach(row => {
+                    const [name, table] = row.split(',');
+                    if (name && table) {
+                        seatingData[name.trim()] = table.trim();
+                        let option = document.createElement('option');
+                        option.value = name.trim();
+                        document.getElementById('guest-list').appendChild(option);
+                    }
+                });
+            });
+
+        function updateTable() {
+            const name = document.getElementById('guest').value.trim();
+            const tableNumber = seatingData[name];
+            document.getElementById('table-number').textContent = tableNumber 
+                ? `You are seated at Table ${tableNumber}` 
+                : '';
+        }
+    </script>
+
 </body>
 </html>
