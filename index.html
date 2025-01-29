@@ -5,31 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedding Seating Chart</title>
     <style>
+        /* Wedding Theme Styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Georgia', serif;
+            background-color: #f8f5f0;
             text-align: center;
-            margin-top: 50px;
+            padding: 20px;
+        }
+        h1 {
+            color: #8b5e3b;
+            font-size: 36px;
+            margin-bottom: 20px;
         }
         select {
-            width: 300px;
-            padding: 10px;
-            font-size: 16px;
+            width: 80%;
+            max-width: 350px;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #8b5e3b;
+            border-radius: 10px;
+            background-color: #fffaf0;
+            color: #5a3d2b;
         }
         #table-number {
             margin-top: 20px;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
+            color: #8b5e3b;
+            background-color: #fff8e1;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
     <h1>Wedding Seating Chart</h1>
-    <label for="guest">Find Your Name:</label>
-    <input list="guest-list" id="guest" placeholder="Start typing your name..." oninput="updateTable()">
-    <datalist id="guest-list"></datalist>
-
-    <p id="table-number"></p>
+    <div class="container">
+        <label for="guest">Find Your Name:</label>
+        <br><br>
+        <select id="guest" onchange="updateTable()">
+            <option value="">Select your name...</option>
+        </select>
+        <p id="table-number"></p>
+    </div>
 
     <script>
         let seatingData = {};
@@ -39,23 +67,30 @@
             .then(response => response.text())
             .then(data => {
                 const rows = data.split('\n').slice(1); // Skip header row
+                const dropdown = document.getElementById('guest');
+
                 rows.forEach(row => {
                     const [name, table] = row.split(',');
                     if (name && table) {
                         seatingData[name.trim()] = table.trim();
                         let option = document.createElement('option');
                         option.value = name.trim();
-                        document.getElementById('guest-list').appendChild(option);
+                        option.textContent = name.trim();
+                        dropdown.appendChild(option);
                     }
                 });
             });
 
         function updateTable() {
-            const name = document.getElementById('guest').value.trim();
+            const name = document.getElementById('guest').value;
             const tableNumber = seatingData[name];
-            document.getElementById('table-number').textContent = tableNumber 
-                ? `You are seated at Table ${tableNumber}` 
-                : '';
+            const output = document.getElementById('table-number');
+
+            if (tableNumber) {
+                output.textContent = `You are seated at Table ${tableNumber}`;
+            } else {
+                output.textContent = '';
+            }
         }
     </script>
 
