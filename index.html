@@ -141,9 +141,15 @@
         }
     
         function updateTableNumber(name) {
-            const tableNumber = seatingData[name];
-            document.getElementById('table-number').textContent = 
-                tableNumber ? `You are seated at Table ${tableNumber}` : "Not a valid name";
+            const lowerCaseName = name.toLowerCase();
+            const foundName = Object.keys(seatingData).find(n => n.toLowerCase() === lowerCaseName);
+            
+            if (foundName) {
+                document.getElementById('table-number').textContent = 
+                    `You are seated at Table ${seatingData[foundName]}`;
+            } else {
+                document.getElementById('table-number').textContent = "Not a valid name";
+            }
         }
     
         // Hide suggestions if clicked outside
@@ -156,15 +162,10 @@
         // Add event listener for Enter key
         document.getElementById('guest').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
-                const inputName = this.value.trim();
-                if (inputName in seatingData) {
-                    updateTableNumber(inputName);
-                } else {
-                    document.getElementById('table-number').textContent = "Not a valid name";
-                }
+                updateTableNumber(this.value.trim());
                 document.getElementById('suggestions').style.display = 'none';
             }
         });
     </script>
 </body>
-</html>    
+</html>
