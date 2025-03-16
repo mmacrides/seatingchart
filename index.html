@@ -85,22 +85,10 @@
         <p id="table-number"></p>
     </div>
 
+    <!-- Reference to the seating data JS file -->
+    <script src="seatingData.js"></script>
+
     <script>
-        let seatingData = {};
-    
-        // Load CSV file
-        fetch('seatingchart.csv')
-            .then(response => response.text())
-            .then(data => {
-                const rows = data.split('\n').slice(1); // Skip header row
-                rows.forEach(row => {
-                    const [name, table] = row.split(',');
-                    if (name && table) {
-                        seatingData[name.trim()] = table.trim();
-                    }
-                });
-            });
-    
         function showSuggestions() {
             const input = document.getElementById('guest');
             const suggestionsDiv = document.getElementById('suggestions');
