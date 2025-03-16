@@ -19,6 +19,13 @@
             margin-bottom: 20px;
             font-family: 'Dancing Script', cursive;
         }
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-family: 'Playfair Display', serif;  /* Change to a bolder, more defined font on mobile */
+                font-weight: bold;
+                font-size: 28px; /* Adjust font size for mobile */
+            }
+        }
         .container {
             background: white;
             padding: 30px;
@@ -92,7 +99,7 @@
 </head>
 <body>
 
-    <h1>Wedding Seating Chart</h1>
+    <h1>Seating Chart</h1>
     <div class="container">
         <label for="guest">Find Your Name:</label>
         <div class="relative">
