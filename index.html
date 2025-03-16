@@ -62,7 +62,7 @@
             font-weight: bold;
             color: #8b5e3b;
             background-color: #fff8e1;
-            display: inline-block;
+            display: none;
             padding: 10px 20px;
             border-radius: 8px;
         }
@@ -79,14 +79,13 @@
     <div class="container">
         <label for="guest">Find Your Name:</label>
         <div class="relative">
-            <input type="text" id="guest" placeholder="Start typing your name..." oninput="showSuggestions()">
+            <input type="text" id="guest" placeholder="Start typing your name..." oninput="handleInputChange()">
             <div id="suggestions"></div>
         </div>
         <p id="table-number"></p>
     </div>
 
     <script>
-        // Hardcoding the seating data
         const seatingData = {
             "John Doe": "A1",
             "Jane Smith": "B2",
@@ -97,7 +96,11 @@
             "Sarah Taylor": "D1"
         };
 
-        // Show suggestions based on input
+        function handleInputChange() {
+            showSuggestions();
+            document.getElementById('table-number').style.display = 'none';
+        }
+
         function showSuggestions() {
             const input = document.getElementById('guest');
             const suggestionsDiv = document.getElementById('suggestions');
@@ -109,7 +112,6 @@
                 return;
             }
 
-            // Filter names based on input
             const matchingNames = Object.keys(seatingData).filter(name => 
                 name.toLowerCase().includes(query)
             );
@@ -119,7 +121,6 @@
                 return;
             }
 
-            // Show suggestions
             matchingNames.forEach(name => {
                 const div = document.createElement('div');
                 div.textContent = name;
@@ -131,34 +132,31 @@
             suggestionsDiv.style.display = 'block';
         }
 
-        // Update table number on selection
         function selectName(name) {
             document.getElementById('guest').value = name;
             document.getElementById('suggestions').style.display = 'none';
             updateTableNumber(name);
         }
 
-        // Update the displayed table number
         function updateTableNumber(name) {
             const lowerCaseName = name.toLowerCase();
             const foundName = Object.keys(seatingData).find(n => n.toLowerCase() === lowerCaseName);
-            
+            const tableNumberElement = document.getElementById('table-number');
+
             if (foundName) {
-                document.getElementById('table-number').textContent = 
-                    `You are seated at Table ${seatingData[foundName]}`;
+                tableNumberElement.textContent = `You are seated at Table ${seatingData[foundName]}`;
             } else {
-                document.getElementById('table-number').textContent = "Name is not found. Please look through dropdown as you start typing your name.";
+                tableNumberElement.textContent = "Name is not found. Please look through the dropdown as you start typing your name.";
             }
+            tableNumberElement.style.display = 'inline-block';
         }
 
-        // Hide suggestions if clicked outside
         document.addEventListener('click', (e) => {
             if (!document.querySelector('.relative').contains(e.target)) {
                 document.getElementById('suggestions').style.display = 'none';
             }
         });
 
-        // Add event listener for Enter key
         document.getElementById('guest').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 updateTableNumber(this.value.trim());
